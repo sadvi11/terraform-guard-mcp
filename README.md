@@ -45,8 +45,8 @@ flowchart LR
     P -->|"destroys something replaceable"| REV
     P -->|"destroys data · kills audit · opens SSH"| BLK
 
-    classDef guard fill:#b45309,stroke:#78350f,color:#fff
-    classDef block fill:#7f1d1d,stroke:#450a0a,color:#fff
+    classDef guard stroke:#d97706,stroke-width:3px
+    classDef block stroke:#dc2626,stroke-width:3px
     class P guard
     class BLK block
 ```
