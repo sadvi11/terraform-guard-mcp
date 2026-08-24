@@ -1,0 +1,6 @@
+{"format_version":"1.2","resource_changes":[
+{"address":"aws_s3_bucket.logs","type":"aws_s3_bucket","name":"logs","change":{"actions":["create"],"after":{"bucket":"app-logs"}}},
+{"address":"aws_cloudwatch_log_group.app","type":"aws_cloudwatch_log_group","name":"app","change":{"actions":["create"],"after":{"retention_in_days":30}}},
+{"address":"aws_ebs_volume.data","type":"aws_ebs_volume","name":"data","change":{"actions":["create"],"after":{"encrypted":true,"size":20}}},
+{"address":"aws_subnet.private","type":"aws_subnet","name":"private","change":{"actions":["update"],"after":{"map_public_ip_on_launch":false}}}
+]}

@@ -1,0 +1,20 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+.DS_Store
+
+# Terraform plans can contain secrets in resource attributes.
+# The fixtures below are hand-written and safe; nothing else is committed.
+plans/*
+!plans/safe.json
+!plans/review-only.json
+!plans/destroys-database.json
+!plans/opens-ssh.json
+!plans/deletes-audit-trail.json
+!plans/malformed.json
+!plans/not-a-plan.json
+*.tfstate
+*.tfstate.*
+tfplan

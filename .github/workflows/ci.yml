@@ -1,0 +1,42 @@
+name: CI
+on:
+  push: {branches: [main]}
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+
+      - run: pip install -e ".[test]"
+
+      - name: Test
+        run: PYTHONPATH=. pytest
+
+      # A green suite proves nothing until it has gone red.
+      - name: Prove the BLOCK verdict is load-bearing
+        run: |
+          python - <<'PY'
+          p='tfguard/rules.py'; s=open(p).read()
+          open(p,'w').write(s.replace("    if high:", "    if False:"))
+          PY
+          if PYTHONPATH=. pytest -q 2>/dev/null; then
+            echo "::error::Disabling BLOCK did not fail any test."; exit 1
+          fi
+          echo "Confirmed: without BLOCK the suite goes red."
+          git checkout tfguard/rules.py
+
+      - name: Prove the path boundary is load-bearing
+        run: |
+          python - <<'PY'
+          p='tfguard/plan.py'; s=open(p).read()
+          open(p,'w').write(s.replace("        candidate.relative_to(PLAN_DIR)", "        pass"))
+          PY
+          if PYTHONPATH=. pytest -q 2>/dev/null; then
+            echo "::error::Removing the sandbox check did not fail any test."; exit 1
+          fi
+          echo "Confirmed: without the boundary, /etc/passwd becomes readable."
+          git checkout tfguard/plan.py

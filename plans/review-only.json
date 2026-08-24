@@ -1,0 +1,4 @@
+{"format_version":"1.2","resource_changes":[
+{"address":"aws_lb.public","type":"aws_lb","name":"public","change":{"actions":["delete","create"],"after":{}}},
+{"address":"aws_ebs_volume.scratch","type":"aws_ebs_volume","name":"scratch","change":{"actions":["create"],"after":{"encrypted":false}}}
+]}
