@@ -8,6 +8,13 @@ dependencies = ["mcp[cli]>=2.0"]
 [project.optional-dependencies]
 test = ["pytest>=8.0"]
 
+# plans/ sits next to tfguard/, and setuptools auto-discovery refuses to
+# guess between two top-level directories. Naming the package explicitly is
+# the fix - and this only showed up in CI, because locally I had been
+# running with PYTHONPATH and never actually installed it.
+[tool.setuptools]
+packages = ["tfguard"]
+
 [project.scripts]
 terraform-guard-mcp = "tfguard.server:main"
 
