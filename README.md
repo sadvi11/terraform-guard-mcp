@@ -47,6 +47,7 @@ flowchart TD
     P --> REV
     P --> BLK
 
+    linkStyle default stroke:#64748b,stroke-width:1.5px
     classDef default fill:#f8fafc,stroke:#64748b,stroke-width:2px,color:#0f172a
     classDef decide fill:#dbeafe,stroke:#1d4ed8,stroke-width:3px,color:#1e3a8a
     classDef ok     fill:#dcfce7,stroke:#15803d,stroke-width:3px,color:#14532d
