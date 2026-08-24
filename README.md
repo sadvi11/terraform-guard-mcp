@@ -48,14 +48,13 @@ flowchart TD
     P --> BLK
 
     classDef default fill:#f8fafc,stroke:#64748b,stroke-width:2px,color:#0f172a
-    classDef guard fill:#fef3c7,stroke:#b45309,stroke-width:3px,color:#78350f
-    classDef ok fill:#dcfce7,stroke:#15803d,stroke-width:3px,color:#14532d
-    classDef warn fill:#ffedd5,stroke:#c2410c,stroke-width:3px,color:#7c2d12
-    classDef stop fill:#fee2e2,stroke:#b91c1c,stroke-width:3px,color:#7f1d1d
-
-    class P guard
+    classDef decide fill:#dbeafe,stroke:#1d4ed8,stroke-width:3px,color:#1e3a8a
+    classDef ok     fill:#dcfce7,stroke:#15803d,stroke-width:3px,color:#14532d
+    classDef human  fill:#fef3c7,stroke:#b45309,stroke-width:3px,color:#78350f
+    classDef stop   fill:#fee2e2,stroke:#b91c1c,stroke-width:3px,color:#7f1d1d
+    class P decide
     class SAFE ok
-    class REV warn
+    class REV human
     class BLK stop
 ```
 
