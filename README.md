@@ -30,25 +30,33 @@ function.
 ## What it does
 
 ```mermaid
-flowchart LR
-    U["<i>is this plan safe?</i>"]
-    A["AI assistant<br/>Claude Desktop · Cursor"]
-    C["MCP client"]
-    S["<b>terraform-guard</b><br/>MCP server"]
-    P{"<b>assess_risk</b><br/>decided in code"}
-    SAFE["SAFE"]
-    REV["REVIEW"]
-    BLK["<b>BLOCK</b>"]
+flowchart TD
+    U["You ask: is this plan safe to apply?"]
+    A["AI assistant<br/>Claude Desktop or Cursor"]
+    S["terraform-guard<br/>MCP server"]
+    P{"assess_risk<br/>decided in code"}
 
-    U --> A --> C -->|"MCP"| S --> P
-    P -->|"creates and updates only"| SAFE
-    P -->|"destroys something replaceable"| REV
-    P -->|"destroys data · kills audit · opens SSH"| BLK
+    SAFE["SAFE<br/>creates and updates only"]
+    REV["REVIEW<br/>destroys something<br/>that comes back"]
+    BLK["BLOCK<br/>destroys data<br/>removes the audit trail<br/>opens SSH to the internet"]
 
-    classDef guard stroke:#d97706,stroke-width:3px
-    classDef block stroke:#dc2626,stroke-width:3px
+    U --> A
+    A -->|"MCP"| S
+    S --> P
+    P --> SAFE
+    P --> REV
+    P --> BLK
+
+    classDef default fill:#f8fafc,stroke:#64748b,stroke-width:2px,color:#0f172a
+    classDef guard fill:#fef3c7,stroke:#b45309,stroke-width:3px,color:#78350f
+    classDef ok fill:#dcfce7,stroke:#15803d,stroke-width:3px,color:#14532d
+    classDef warn fill:#ffedd5,stroke:#c2410c,stroke-width:3px,color:#7c2d12
+    classDef stop fill:#fee2e2,stroke:#b91c1c,stroke-width:3px,color:#7f1d1d
+
     class P guard
-    class BLK block
+    class SAFE ok
+    class REV warn
+    class BLK stop
 ```
 
 **Five tools**, but only one of them decides:
