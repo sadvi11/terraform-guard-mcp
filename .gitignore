@@ -18,3 +18,4 @@ plans/*
 *.tfstate
 *.tfstate.*
 tfplan
+!plans/injection.json

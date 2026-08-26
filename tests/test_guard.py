@@ -192,3 +192,33 @@ def test_the_sandbox_is_what_stops_traversal(monkeypatch, tmp_path):
     assert resolve_plan_path("x.json").is_file()
     with pytest.raises(PlanError):
         resolve_plan_path("../outside.json")
+
+
+# ---------------------------------------------------------------------------
+# Untrusted plan content must not be able to forge tool output
+# ---------------------------------------------------------------------------
+@pytest.mark.parametrize("tool", [assess_risk, summarize_plan, find_destructive_changes])
+def test_a_hostile_resource_name_cannot_forge_tool_output(tool):
+    """The hostile words themselves survive, and they should - they are part
+    of a resource name that really is in the plan, and removing them would
+    misreport its contents. What must not survive is the *structure*: a
+    forged section boundary or a fake SYSTEM: line needs a line of its own
+    to be convincing, and untrusted text no longer gets one.
+    """
+    out = tool("injection.json")
+    for line in out.split("\n"):
+        stripped = line.lstrip()
+        assert not stripped.startswith("SYSTEM:"), f"forged system line: {line!r}"
+        assert not stripped.startswith("==="), f"forged boundary: {line!r}"
+    assert "\n\n\n" not in out, "injected blank-line gap"
+
+
+def test_the_verdict_itself_was_never_at_risk():
+    assert "VERDICT: BLOCK" in assess_risk("injection.json")
+
+
+def test_untrusted_names_are_capped_in_length():
+    """A 5,000-character resource name should not be able to push the verdict
+    off the top of the model's context."""
+    from tfguard.plan import _clean
+    assert len(_clean("a" * 5000)) <= 120

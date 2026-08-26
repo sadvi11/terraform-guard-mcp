@@ -37,6 +37,19 @@ AUDIT = {
 }
 
 
+def _clean(value: object) -> str:
+    """Plan files are untrusted input, and their strings end up in text a
+    model reads. A resource address is `type.name` - it has no legitimate
+    reason to contain a newline, so anything that does is trying to forge a
+    boundary in our own output.
+
+    str.split() with no argument splits on any run of whitespace, including
+    newlines and tabs, so joining it back on single spaces flattens the lot.
+    """
+    flat = " ".join(str(value).split())
+    return flat[:120]
+
+
 class PlanError(Exception):
     """Raised rather than returning a guess. A tool that cannot read its
     input must say so - a summary of a file it failed to parse is worse
@@ -138,9 +151,9 @@ def changes(plan: dict) -> list[Change]:
             continue
         out.append(
             Change(
-                address=rc.get("address", "?"),
-                type=rc.get("type", "?"),
-                name=rc.get("name", "?"),
+                address=_clean(rc.get("address", "?")),
+                type=_clean(rc.get("type", "?")),
+                name=_clean(rc.get("name", "?")),
                 actions=actions,
             )
         )
@@ -156,5 +169,5 @@ def after_values(plan: dict, resource_type: str) -> list[tuple[str, dict]]:
             continue
         after = (rc.get("change") or {}).get("after")
         if isinstance(after, dict):
-            out.append((rc.get("address", "?"), after))
+            out.append((_clean(rc.get("address", "?")), after))
     return out
