@@ -1,7 +1,7 @@
 """The MCP server.
 
-Four tools. Three of them describe a plan; the fourth decides about it, and
-that fourth one is why this exists.
+Five tools. Four of them describe a plan; the fifth decides about it, and
+that fifth one is why this exists.
 
 Tool descriptions are written for the model, not for a human reading the
 source. The model chooses a tool from its description and nothing else, so
