@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Blast Radius</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --bg:      #0b0f14;
+    --card:    #141b23;
+    --line:    #263241;
+    --text:    #e8eef5;
+    --muted:   #7d8fa3;
+    --danger:  #ff4d4d;
+    --warn:    #ffb020;
+    --safe:    #2fd47b;
+  }
+
+  html, body { height: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.5 ui-sans-serif, -apple-system, "Segoe UI", system-ui, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+    overflow: hidden;
+  }
+
+  .screen { width: 100%; max-width: 860px; }
+
+  /* ---------- idle ---------- */
+
+  .idle { text-align: center; }
+  .idle h1 { font-size: clamp(28px, 5vw, 44px); font-weight: 600; letter-spacing: -0.02em; }
+  .idle p  { color: var(--muted); margin-top: 12px; font-size: clamp(15px, 2.2vw, 19px); }
+
+  .pulse {
+    width: 88px; height: 88px; margin: 0 auto 32px;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    display: grid; place-items: center;
+  }
+  .pulse::after {
+    content: ""; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--safe); animation: breathe 2.4s ease-in-out infinite;
+  }
+  @keyframes breathe { 0%,100% { opacity: .25; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.15); } }
+
+  /* ---------- request ---------- */
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    overflow: hidden;
+    animation: rise .28s cubic-bezier(.2,.7,.3,1);
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+
+  .banner {
+    padding: 20px 28px;
+    font-weight: 700;
+    font-size: clamp(15px, 2.4vw, 19px);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .banner.BLOCK  { background: rgba(255,77,77,.14);  color: var(--danger); border-bottom: 1px solid rgba(255,77,77,.3); }
+  .banner.REVIEW { background: rgba(255,176,32,.14); color: var(--warn);   border-bottom: 1px solid rgba(255,176,32,.3); }
+  .banner .dot { width: 12px; height: 12px; border-radius: 50%; background: currentColor; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: .25; } }
+
+  .body { padding: 28px; }
+  .tool { color: var(--muted); font-size: 14px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .summary { font-size: clamp(22px, 3.8vw, 34px); font-weight: 600; margin-top: 10px; letter-spacing: -0.02em; line-height: 1.25; }
+
+  .resources { list-style: none; margin-top: 26px; display: flex; flex-direction: column; gap: 10px; }
+  .resource {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    padding: 14px 16px; border-radius: 12px;
+    background: rgba(255,255,255,.03);
+    border: 1px solid var(--line);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: clamp(13px, 1.9vw, 16px);
+  }
+  .resource.fatal { background: rgba(255,77,77,.09); border-color: rgba(255,77,77,.4); }
+  .resource .name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .tag {
+    font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    padding: 5px 10px; border-radius: 999px; font-family: inherit; font-weight: 700;
+    background: rgba(255,255,255,.07); color: var(--muted); white-space: nowrap;
+  }
+  .tag.fatal { background: rgba(255,77,77,.2); color: var(--danger); }
+
+  /* ---------- buttons ---------- */
+
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 30px; }
+  @media (max-width: 560px) { .actions { grid-template-columns: 1fr; } }
+
+  button {
+    font: inherit; font-weight: 700; letter-spacing: .04em;
+    font-size: clamp(19px, 2.8vw, 24px);
+    padding: 26px 20px; border-radius: 16px; border: 2px solid;
+    cursor: pointer; transition: transform .12s ease, filter .12s ease;
+    touch-action: manipulation;
+  }
+  button:active { transform: scale(.97); filter: brightness(1.15); }
+  button:disabled { opacity: .4; pointer-events: none; }
+
+  .no  { background: var(--danger); border-color: var(--danger); color: #fff; }
+  .yes { background: transparent; border-color: var(--line); color: var(--muted); }
+
+  .hint { text-align: center; color: var(--muted); font-size: 13px; margin-top: 18px; }
+
+  /* ---------- result ---------- */
+
+  .result { text-align: center; animation: rise .28s cubic-bezier(.2,.7,.3,1); }
+  .result .mark { font-size: clamp(56px, 11vw, 96px); line-height: 1; }
+  .result h2 { font-size: clamp(26px, 4.6vw, 40px); margin-top: 18px; font-weight: 700; letter-spacing: -0.02em; }
+  .result p { color: var(--muted); margin-top: 10px; font-size: clamp(15px, 2.2vw, 18px); }
+  .result.blocked h2 { color: var(--danger); }
+  .result.approved h2 { color: var(--safe); }
+
+  .offline {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: var(--danger); color: #fff;
+    text-align: center; padding: 10px; font-size: 14px; font-weight: 600;
+    transform: translateY(-100%); transition: transform .25s ease;
+  }
+  .offline.show { transform: none; }
+</style>
+</head>
+<body>
+
+<div class="offline" id="offline">Cannot reach the relay — is <code>server.py</code> running?</div>
+<div class="screen" id="screen"></div>
+
+<script>
+"use strict";
+
+var POLL_MS = 800;
+var screen = document.getElementById("screen");
+var offline = document.getElementById("offline");
+
+var currentId = null;   // request on screen right now
+var resultUntil = 0;    // hold the YES/NO confirmation on screen until this time
+var busy = false;       // a decision is in flight
+
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+
+function renderIdle() {
+  currentId = null;
+  screen.innerHTML =
+    '<div class="idle">' +
+      '<div class="pulse"></div>' +
+      "<h1>Watching the agent</h1>" +
+      "<p>Nothing needs your attention right now.</p>" +
+    "</div>";
+}
+
+function renderRequest(req) {
+  currentId = req.id;
+
+  var rows = (req.resources || []).map(function (r) {
+    var fatal = r.fatal ? " fatal" : "";
+    var tag = r.fatal
+      ? '<span class="tag fatal">gone for good</span>'
+      : '<span class="tag">' + esc(r.action) + "</span>";
+    return (
+      '<li class="resource' + fatal + '">' +
+        '<span class="name">' + esc(r.name) + "</span>" +
+        '<span class="tag">' + esc(r.action) + "</span>" +
+        (r.fatal ? tag : "") +
+      "</li>"
+    );
+  }).join("");
+
+  screen.innerHTML =
+    '<div class="card">' +
+      '<div class="banner ' + esc(req.verdict) + '">' +
+        '<span class="dot"></span>' +
+        (req.verdict === "BLOCK" ? "Destroys something you cannot get back" : "Destroys something") +
+      "</div>" +
+      '<div class="body">' +
+        '<div class="tool">' + esc(req.tool) + "</div>" +
+        '<div class="summary">' + esc(req.summary) + "</div>" +
+        '<ul class="resources">' + rows + "</ul>" +
+        '<div class="actions">' +
+          '<button class="no"  id="btn-no">NO — stop it</button>' +
+          '<button class="yes" id="btn-yes">Yes, go ahead</button>' +
+        "</div>" +
+        '<div class="hint">The agent is frozen until you tap.</div>' +
+      "</div>" +
+    "</div>";
+
+  document.getElementById("btn-no").onclick = function () { decide(req.id, "block"); };
+  document.getElementById("btn-yes").onclick = function () { decide(req.id, "approve"); };
+
+  if (navigator.vibrate) navigator.vibrate([90, 60, 90]);
+}
+
+function renderResult(status) {
+  var blocked = status === "blocked";
+  screen.innerHTML =
+    '<div class="result ' + (blocked ? "blocked" : "approved") + '">' +
+      '<div class="mark">' + (blocked ? "&#10005;" : "&#10003;") + "</div>" +
+      "<h2>" + (blocked ? "Blocked" : "Approved") + "</h2>" +
+      "<p>" + (blocked ? "The agent has been told no." : "The agent may continue.") + "</p>" +
+    "</div>";
+  resultUntil = Date.now() + 2600;
+  currentId = null;
+}
+
+function decide(id, decision) {
+  if (busy) return;
+  busy = true;
+  var buttons = screen.querySelectorAll("button");
+  for (var i = 0; i < buttons.length; i++) buttons[i].disabled = true;
+
+  fetch("/requests/" + encodeURIComponent(id) + "/decision", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ decision: decision })
+  })
+    .then(function (r) { return r.json(); })
+    .then(function (rec) { renderResult(rec.status); })
+    .catch(function () { renderIdle(); })
+    .then(function () { busy = false; });
+}
+
+function poll() {
+  if (busy || Date.now() < resultUntil) return;
+
+  fetch("/requests/pending")
+    .then(function (r) { return r.json(); })
+    .then(function (pending) {
+      offline.classList.remove("show");
+      var next = pending && pending.length ? pending[0] : null;
+      if (!next) {
+        if (currentId !== null) renderIdle();
+        return;
+      }
+      if (next.id !== currentId) renderRequest(next);
+    })
+    .catch(function () { offline.classList.add("show"); });
+}
+
+renderIdle();
+poll();
+setInterval(poll, POLL_MS);
+</script>
+</body>
+</html>
