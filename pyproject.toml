@@ -2,8 +2,34 @@
 name = "terraform-guard-mcp"
 version = "0.1.0"
 description = "MCP server that inspects Terraform plans and refuses to bless dangerous ones"
+readme = "README.md"
 requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "Sadhvi Sharma", email = "sadhvisharma763@gmail.com"}]
+keywords = [
+    "terraform", "mcp", "model-context-protocol", "infrastructure-as-code",
+    "devsecops", "guardrails", "policy-as-code", "aws",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Software Development :: Quality Assurance",
+]
 dependencies = ["mcp[cli]>=2.0"]
+
+[project.urls]
+Homepage = "https://github.com/sadvi11/terraform-guard-mcp"
+Source = "https://github.com/sadvi11/terraform-guard-mcp"
+Issues = "https://github.com/sadvi11/terraform-guard-mcp/issues"
+Changelog = "https://github.com/sadvi11/terraform-guard-mcp/releases"
 
 [project.optional-dependencies]
 test = ["pytest>=8.0"]

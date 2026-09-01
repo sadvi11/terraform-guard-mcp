@@ -1,0 +1,78 @@
+name: Publish to PyPI
+
+# Fires only when a GitHub Release is published - never on a push - so a
+# release is always a deliberate act.
+#
+# No API token is stored anywhere. This uses PyPI Trusted Publishing: PyPI is
+# configured to trust this specific repository and workflow, and GitHub mints
+# a short-lived OIDC token for the job. There is no long-lived credential to
+# leak, rotate, or accidentally print into a log.
+#
+# One-time setup on PyPI before the first release, at
+# https://pypi.org/manage/account/publishing/ :
+#   PyPI Project Name : terraform-guard-mcp
+#   Owner             : sadvi11
+#   Repository name   : terraform-guard-mcp
+#   Workflow name     : release.yml
+#   Environment name  : pypi
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+
+      - name: Install and test before building anything
+        run: |
+          pip install ".[test]"
+          pytest -q
+
+      - name: Build sdist and wheel
+        run: |
+          pip install build twine
+          python -m build
+          twine check dist/*
+
+      - name: The version tag matches the version in pyproject
+        if: github.event_name == 'release'
+        run: |
+          python - <<'PY'
+          import os, sys, tomllib
+          declared = tomllib.load(open("pyproject.toml","rb"))["project"]["version"]
+          tag = os.environ["TAG"].lstrip("v")
+          if declared != tag:
+              print(f"::error::tag {tag} does not match pyproject version {declared}. "
+                    f"PyPI versions can never be reused, so this stops before it matters.")
+              sys.exit(1)
+          print(f"tag and pyproject agree on {declared}")
+          PY
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/terraform-guard-mcp
+    permissions:
+      id-token: write        # mint the OIDC token; this is the whole mechanism
+    steps:
+      - uses: actions/download-artifact@v4
+        with: {name: dist, path: dist/}
+      - uses: pypa/gh-action-pypi-publish@release/v1

@@ -222,17 +222,49 @@ to be rewritten.
 
 ---
 
-## Try it
+## Install
 
 ```bash
+pip install terraform-guard-mcp
+```
+
+That puts a `terraform-guard-mcp` command on your PATH. The server reads plans
+from `TFGUARD_PLAN_DIR`, and refuses to read anything outside it — see
+[It refuses to read the wrong file, too](#it-refuses-to-read-the-wrong-file-too).
+
+Point an MCP client at it — Claude Desktop, Cursor, or the MCP Inspector:
+
+```json
+{
+  "mcpServers": {
+    "terraform-guard": {
+      "command": "terraform-guard-mcp",
+      "env": { "TFGUARD_PLAN_DIR": "/absolute/path/to/your/plans" }
+    }
+  }
+}
+```
+
+Generate a plan for it to read the way you normally would:
+
+```bash
+terraform plan -out=tfplan
+terraform show -json tfplan > plans/current.json
+```
+
+## Work on it
+
+```bash
+git clone https://github.com/sadvi11/terraform-guard-mcp
+cd terraform-guard-mcp
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[test]"
-export PYTHONPATH=.
 
 pytest                 # 34 tests. No cloud, no key, no network.
 ```
 
-Point an MCP client at it — Claude Desktop, Cursor, or the MCP Inspector:
+<details>
+<summary>Running from source instead of the installed command</summary>
 
 ```json
 {
@@ -245,6 +277,8 @@ Point an MCP client at it — Claude Desktop, Cursor, or the MCP Inspector:
   }
 }
 ```
+
+</details>
 
 Then ask it: **"is destroys-database.json safe to apply?"**
 
