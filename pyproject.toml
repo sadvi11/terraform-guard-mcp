@@ -1,6 +1,10 @@
 [project]
 name = "terraform-guard-mcp"
-version = "0.1.0"
+# Matches the v1.0.0 release already published on GitHub. These had drifted:
+# the tag said 1.0.0 and this said 0.1.0, which would have put a 0.1.0 on PyPI
+# for a project whose own release page advertises 1.0.0 - and a PyPI version
+# can never be reused or corrected afterwards.
+version = "1.0.0"
 description = "MCP server that inspects Terraform plans and refuses to bless dangerous ones"
 readme = "README.md"
 requires-python = ">=3.11"

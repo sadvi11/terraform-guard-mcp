@@ -16,6 +16,15 @@ name: Publish to PyPI
 #   Workflow name     : release.yml
 #   Environment name  : pypi
 
+# For the FIRST publish, use workflow_dispatch from the Actions tab, not the
+# existing v1.0.0 release. That tag was cut before the packaging metadata
+# existed, so a release built from it would produce a distribution with no
+# readme, no license and no classifiers - and that version could never be
+# re-uploaded to correct it. workflow_dispatch builds from main, which has them.
+#
+# Subsequent versions: bump pyproject, then publish a GitHub Release whose tag
+# matches. The check below enforces that they agree.
+
 on:
   release:
     types: [published]
