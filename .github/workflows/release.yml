@@ -37,8 +37,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with: {python-version: "3.11"}
 
       - name: Install and test before building anything
@@ -68,7 +68,7 @@ jobs:
         env:
           TAG: ${{ github.event.release.tag_name }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist/
@@ -82,6 +82,6 @@ jobs:
     permissions:
       id-token: write        # mint the OIDC token; this is the whole mechanism
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with: {name: dist, path: dist/}
       - uses: pypa/gh-action-pypi-publish@release/v1
