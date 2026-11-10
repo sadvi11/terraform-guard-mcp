@@ -10,7 +10,6 @@ each one says **when to use it** rather than only what it is - and
 """
 from __future__ import annotations
 
-import json
 import os
 
 from mcp.server import MCPServer
