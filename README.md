@@ -354,6 +354,27 @@ read beats a scanner with two hundred rules they learn to skip.
 
 ---
 
+## What I'd change for production
+
+This is a guard I have tested against fixtures, not a hardened service. Gaps I know about:
+
+- **Rule coverage is small** (six rules). A real pipeline should run it *alongside* a
+  scanner such as Checkov or Trivy, not instead of one.
+- **Override path is not implemented.** BLOCK says "explicit, recorded override", but
+  the server records nothing; that belongs in CI or change management, e.g. a protected
+  environment approval in GitHub Actions
+  ([docs](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-deployments/managing-environments-for-deployment)).
+- **Plans can contain secrets.** In production, plan files should live in a restricted
+  location and be read by the server over a least-privilege mount.
+- **Azure and GCP resource types** are listed but untested.
+
+Design decisions are recorded in [`docs/adr/`](docs/adr/):
+[001 verdict in code](docs/adr/001-verdict-computed-in-code.md),
+[002 sanitise at parse time](docs/adr/002-sanitise-plan-text-at-parse-time.md),
+[003 plan directory boundary](docs/adr/003-plan-directory-boundary.md).
+
+---
+
 ## Why this shape
 
 Every project I build proves its own checks can fail. Insecure fixtures that
